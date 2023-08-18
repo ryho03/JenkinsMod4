@@ -1,23 +1,21 @@
 pipeline {
    agent any
-   stages {
-      stage('init') {
-          steps {
-            sh 'chmod +x init.sh'
-            sh 'sh init.sh'
-          }
-      }
-      stage('Build') {
-          steps {
-            sh 'chmod +x build.sh'
-            sh 'sh build.sh'
-          }
-      }
-      stage('Deploy') {
-          steps {
-            sh 'chmod +x deploy.sh'
-            sh 'sh deploy.sh'
-          }
-      }      
-   }
+    stages {
+         stage('Init') {
+            steps {
+                sh 'docker rm -f $(docker ps -qa) || true'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'docker build -t myapp .'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'docker run -d -p 80:5500 --name myapp myapp:latest'
+            }
+        }
+    }
 }
